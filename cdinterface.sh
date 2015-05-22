@@ -4,11 +4,13 @@ cd() {
     makelog
 
     if [ -z "$1" ]; then
-        builtin cd $(
-        {
-            echo "$HOME"
-            reverse $log
-        } | duplicate - | peco)
+        target=$(
+            {
+                echo "$HOME"
+                reverse $log
+            } | duplicate - | peco
+        )
+        [[ -n "$target" ]] && builtin cd "$target"
     else
         if [ -d "$1" ]; then
             builtin cd "$1"
