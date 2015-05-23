@@ -1,48 +1,55 @@
 log=~/.cdlog
 
 cd() {
-    makelog
+    makelog "refresh"
 
-    if [ -z "$1" ]; then
+    if [ -d "$1" ]; then
+        builtin cd "$1"
+    else
+        interface "$1"
+    fi
+
+    makelog "assemble"
+}
+
+interface() {
+    if ! type peco >/dev/null; then
+        builtin cd "$1"
+        return 0
+    fi
+
+    if [[ -z "$1" ]]; then
         target=$(
             {
                 echo "$HOME"
                 reverse $log
-            } | duplicate - | peco
+            } | unique | peco
         )
         [[ -n "$target" ]] && builtin cd "$target"
     else
-        if [ -d "$1" ]; then
-            builtin cd "$1"
+        c=$(count "$1")
+        if [[ "$c" -eq 0 ]]; then
+            echo "$1: no such file or directory"
+            return 1
+        elif [[ "$c" -eq 1 ]]; then
+            builtin cd $(narrow "$1")
         else
-            extend_cd "$1"
+            builtin cd $(narrow "$1"| peco)
         fi
-    fi
-}
-
-extend_cd() {
-    c=$(count "$1")
-    if [[ "$c" -eq 0 ]]; then
-        echo "$1: no such file or directory"
-        return 1
-    elif [[ "$c" -eq 1 ]]; then
-        builtin cd $(narrow "$1")
-    else
-        builtin cd $(narrow "$1"| peco)
     fi
     return 0
 }
 
-duplicate() {
-    awk '!a[$0]++' "$1"
+unique() {
+    awk '!a[$0]++' "${1:--}"
+}
+
+list() {
+    reverse $log | unique
 }
 
 narrow() {
     list | awk '/\/.?'"$1"'[^\/]*$/{print $0}'
-}
-
-list() {
-    reverse $log | duplicate -
 }
 
 count() {
@@ -50,13 +57,13 @@ count() {
 }
 
 reverse() {
-$(which ex) -s $1 <<-EOF
+    ex -s "$1" <<-EOF
 g/^/mo0
 %p
 EOF
 }
 
-log() {
+enumrate() {
     touch "$log"
     target=$PWD
     file=$(
@@ -68,24 +75,35 @@ log() {
     done
     find $target -maxdepth 1 -type d | grep -v "\/\."
     )
-    echo "${file[@]}" >>"$log"
+    echo "${file[@]}"
 }
 
-
-if [ "$0" != "${BASH_SOURCE:-}" ]; then
-    autoload -Uz add-zsh-hook
-    add-zsh-hook chpwd log
-fi
+#if [ "$0" != "${BASH_SOURCE:-}" ]; then
+#    autoload -Uz add-zsh-hook
+#    add-zsh-hook chpwd afterlog
+#fi
 
 refresh() {
-    cat "$log" | while read line
+    touch "$log"
+
+    while read line
     do
         [ -d "$line" ] && echo $line
-    done
+    done <"$log"
 }
 
 makelog() {
-    refresh >/tmp/log.$$
+    $1 >/tmp/log.$$
     rm "$log"
     mv /tmp/log.$$ "$log"
+}
+
+assemble() {
+    enumrate
+    cat "$log"
+    pwd
+}
+
+afterlog() {
+    makelog "assemble"
 }
