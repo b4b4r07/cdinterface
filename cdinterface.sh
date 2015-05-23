@@ -71,8 +71,11 @@ log() {
     echo "${file[@]}" >>"$log"
 }
 
-autoload -Uz add-zsh-hook
-add-zsh-hook chpwd log
+
+if [ "$0" != "${BASH_SOURCE:-}" ]; then
+    autoload -Uz add-zsh-hook
+    add-zsh-hook chpwd log
+fi
 
 refresh() {
     cat "$log" | while read line
