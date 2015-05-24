@@ -7,8 +7,7 @@ cd() {
         builtin cd "$1"
     else
         interface "$1"
-    fi
-
+    fi &&
     makelog "assemble"
 }
 
@@ -65,23 +64,18 @@ EOF
 
 enumrate() {
     touch "$log"
-    target=$PWD
+
     file=$(
-    for ((i=1; i<${#target}+1; i++))
+    for ((i=1; i<${#PWD}+1; i++))
     do
-        if [[ ${target:0:$i+1} =~ /$ ]]; then
-            echo ${target:0:$i}
+        if [[ ${PWD:0:$i+1} =~ /$ ]]; then
+            echo ${PWD:0:$i}
         fi
     done
-    find $target -maxdepth 1 -type d | grep -v "\/\."
+    find $PWD -maxdepth 1 -type d | grep -v "\/\."
     )
     echo "${file[@]}"
 }
-
-#if [ "$0" != "${BASH_SOURCE:-}" ]; then
-#    autoload -Uz add-zsh-hook
-#    add-zsh-hook chpwd afterlog
-#fi
 
 refresh() {
     touch "$log"
@@ -104,6 +98,11 @@ assemble() {
     pwd
 }
 
-afterlog() {
-    makelog "assemble"
-}
+#hookmake() {
+#    makelog "assemble"
+#}
+#
+#if [ "$0" != "${BASH_SOURCE:-}" ]; then
+#    autoload -Uz add-zsh-hook
+#    add-zsh-hook chpwd hookmake
+#fi
