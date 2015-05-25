@@ -20,9 +20,9 @@ interface() {
     if [[ -z "$1" ]]; then
         target=$(
             {
+                cat "$log"
                 echo "$HOME"
-                reverse $log
-            } | unique | peco
+            } | reverse2 | unique | peco
         )
         [[ -n "$target" ]] && builtin cd "$target"
     else
@@ -98,11 +98,6 @@ assemble() {
     pwd
 }
 
-#hookmake() {
-#    makelog "assemble"
-#}
-#
-#if [ "$0" != "${BASH_SOURCE:-}" ]; then
-#    autoload -Uz add-zsh-hook
-#    add-zsh-hook chpwd hookmake
-#fi
+reverse2() {
+    perl -e 'print reverse <>'
+}
