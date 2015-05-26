@@ -11,8 +11,13 @@ cd() {
     makelog "assemble"
 }
 
+exists() {
+    type "$1" >/dev/null
+    return $?
+}
+
 interface() {
-    if ! type peco >/dev/null; then
+    if ! exists "peco"; then
         builtin cd "$1"
         return 0
     fi
@@ -20,12 +25,17 @@ interface() {
     if [[ -z "$1" ]]; then
         target=$(
             {
+                exists "ghq" && ghq list -p
                 cat "$log"
                 echo "$HOME"
             } | reverse2 | unique | peco
         )
         [[ -n "$target" ]] && builtin cd "$target"
     else
+        if [[ "$1" = "-" ]]; then
+            builtin cd "$(tail "$log" | head -9 | tail -1)" && return 0
+        fi
+
         c=$(count "$1")
         if [[ "$c" -eq 0 ]]; then
             echo "$1: no such file or directory"
@@ -45,6 +55,7 @@ unique() {
 
 list() {
     reverse $log | unique
+    exists "ghq" && ghq list -p
 }
 
 narrow() {
