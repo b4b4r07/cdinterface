@@ -54,8 +54,10 @@ unique() {
 }
 
 list() {
-    reverse $log | unique
-    exists "ghq" && ghq list -p
+    {
+        reverse $log
+        exists "ghq" && ghq list -p
+    } | unique
 }
 
 narrow() {
