@@ -3,12 +3,34 @@ log=~/.cdlog
 cd() {
     makelog "refresh"
 
-    if [ -d "$1" ]; then
+    if [ -p /dev/stdin ]; then
+        a=$(accept)
+        builtin cd "${a:-$1}"
+    elif [ -f "$1" ]; then
+        c=$(count "$1")
+        if [[ "$c" -eq 0 ]]; then
+            builtin cd "$(dirname "$1")"
+        else
+            interface "$1"
+        fi
+    elif [ -d "$1" ]; then
         builtin cd "$1"
     else
         interface "$1"
     fi &&
     makelog "assemble"
+}
+
+accept() {
+    exists "peco" || return 1
+    line=$(cat -)
+    if [[ $(echo "$line" | grep -c "") > 1 ]]; then
+        line=$(echo "$line" | peco)
+    fi
+    if [ ! -d "$line" ]; then
+        line=$(dirname "$line")
+    fi
+    echo "$line"
 }
 
 exists() {
