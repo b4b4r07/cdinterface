@@ -61,7 +61,7 @@ list() {
 }
 
 narrow() {
-    list | awk '/\/.?'"$1"'[^\/]*$/{print $0}'
+    list | awk '/\/.?'"$1"'[^\/]*$/{print $0}' 2>/dev/null
 }
 
 count() {
