@@ -25,7 +25,7 @@ accept() {
     exists "peco" || return 1
     line=$(cat -)
     if [[ $(echo "$line" | grep -c "") > 1 ]]; then
-        line=$(echo "$line" | peco)
+        line=$(echo "$line" | peco --layout=bottom-up)
     fi
     if [ ! -d "$line" ]; then
         line=$(dirname "$line")
@@ -50,7 +50,7 @@ interface() {
                 exists "ghq" && ghq list -p
                 cat "$log"
                 echo "$HOME"
-            } | reverse2 | unique | peco
+            } | reverse2 | unique | peco --layout=bottom-up
         )
         [[ -n "$target" ]] && builtin cd "$target"
     else
@@ -65,7 +65,7 @@ interface() {
         elif [[ "$c" -eq 1 ]]; then
             builtin cd $(narrow "$1")
         else
-            builtin cd $(narrow "$1"| peco)
+            builtin cd $(narrow "$1"| peco --layout=bottom-up)
         fi
     fi
     return 0
