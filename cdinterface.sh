@@ -55,7 +55,9 @@ interface() {
         [[ -n "$target" ]] && builtin cd "$target"
     else
         if [[ "$1" = "-" ]]; then
-            builtin cd "$(tail "$log" | head -9 | tail -1)" && return 0
+            target=$(list | head | peco --layout=bottom-up)
+            [[ -n "$target" ]] && builtin cd "$target"
+            return 0
         fi
 
         c=$(count "$1")
