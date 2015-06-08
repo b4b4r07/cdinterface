@@ -1,6 +1,7 @@
 log=~/.cdlog
 
 cd() {
+    makelog "acceleration"
     makelog "refresh"
 
     if [ -p /dev/stdin ]; then
@@ -133,6 +134,10 @@ assemble() {
     enumrate
     cat "$log"
     pwd
+}
+
+acceleration() {
+    list | reverse2
 }
 
 reverse2() {
