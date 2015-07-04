@@ -5,6 +5,9 @@ FILTER_OPTION="--layout=bottom-up"
 FILTER="$FILTER_COMMAND $FILTER_OPTION"
 
 cd() {
+    if [ ! -f "$log" ]; then
+        touch "$log"
+    fi
     makelog "acceleration"
     makelog "refresh"
 
