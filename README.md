@@ -1,4 +1,8 @@
-# cdinterface
+:warning: cdinterface is deprecated and was merged into this [`enhancd`](https://github.com/b4b4r07/enhancd).
+
+[![](https://raw.githubusercontent.com/b4b4r07/screenshots/master/enhancd/logo.png)](https://github.com/b4b4r07/enhancd)
+
+# ~~cdinterface~~
 
 The next generation of change directory with peco
 
