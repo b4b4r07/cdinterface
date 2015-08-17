@@ -30,7 +30,7 @@ The next generation of change directory with peco
 
 ## Usage
 
-	$ cd <directroy>
+	$ cd <directory>
 
 ## Installation
 
